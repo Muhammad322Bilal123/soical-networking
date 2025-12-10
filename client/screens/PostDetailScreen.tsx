@@ -114,15 +114,13 @@ export default function PostDetailScreen() {
       );
     },
   });
-  const deleteCommentMutation = useMutation(
-    (commentId: string) => apiRequest("DELETE", `/api/comments/${commentId}`),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["/api/posts", postId, "comments"]);
-        queryClient.invalidateQueries(["/api/posts", postId]);
-      },
-    }
-  );
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => apiRequest("DELETE", `/api/comments/${commentId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId] });
+    },
+  });
 
 
   useLayoutEffect(() => {
