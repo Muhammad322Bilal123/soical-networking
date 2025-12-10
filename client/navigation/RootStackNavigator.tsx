@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "@/contexts/AuthContext";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
+import { useLoadAssets } from "@/hooks/useLoadAssets";
 import MainTabNavigator from "@/navigation/MainTabNavigator";
 import SplashScreen from "@/screens/SplashScreen";
 import OnboardingScreen from "@/screens/OnboardingScreen";
@@ -33,10 +34,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const ONBOARDING_KEY = "@nexio_onboarding_complete";
 
 export default function RootStackNavigator() {
+  const assetsLoaded = useLoadAssets();
   const screenOptions = useScreenOptions();
   const { isAuthenticated, isLoading } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(
+    null
+  );
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   useEffect(() => {
@@ -65,7 +69,7 @@ export default function RootStackNavigator() {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
 
-  if (hasSeenOnboarding === null || isLoading) {
+  if (!assetsLoaded || hasSeenOnboarding === null || isLoading) {
     return null;
   }
 
