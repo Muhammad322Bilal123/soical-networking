@@ -4,6 +4,7 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
+  TextInput as RNTextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -11,7 +12,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { TextInput } from "@/components/TextInput";
 import { PostCard } from "@/components/PostCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -216,13 +216,19 @@ export default function SearchScreen() {
         ]}
       >
         <View style={styles.searchRow}>
-          <View style={styles.searchInputContainer}>
+          <View
+            style={[
+              styles.searchInputContainer,
+              { backgroundColor: theme.backgroundMuted },
+            ]}
+          >
             <Feather name="search" size={20} color={theme.textSecondary} />
-            <TextInput
+            <RNTextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Search..."
-              style={styles.searchInput}
+              placeholderTextColor={theme.textSecondary}
+              style={[styles.searchInput, { color: theme.text }]}
               autoFocus
             />
           </View>
@@ -286,13 +292,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
-    backgroundColor: "#f0f0f0",
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
   },
   searchInput: {
     flex: 1,
-    height: 40,
+    fontSize: 16,
+    height: 44,
   },
   tabs: {
     flexDirection: "row",
@@ -335,7 +341,7 @@ const styles = StyleSheet.create({
   userItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: Spacing.md,
+    padding: SpACING.md,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
     backgroundColor: "#fff",
