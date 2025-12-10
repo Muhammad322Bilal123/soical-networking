@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xl, // Increased top padding
   },
   searchRow: {
     flexDirection: "row",
