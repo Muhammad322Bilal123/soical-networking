@@ -63,6 +63,7 @@ export default function CreatePostScreen() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      Alert.alert("Success", "Your post has been published!");
       navigation.goBack();
     },
     onError: (error: any) => {
@@ -82,6 +83,8 @@ export default function CreatePostScreen() {
       headerRight: () => (
         <HeaderButton
           onPress={() => {
+            // This is the critical fix for iOS.
+            // Dismiss the keyboard before mutating to ensure the press event registers.
             Keyboard.dismiss();
             createPostMutation.mutate();
           }}
@@ -103,7 +106,7 @@ export default function CreatePostScreen() {
         </HeaderButton>
       ),
     });
-  }, [navigation, theme, isValid, createPostMutation.mutate]);
+  }, [navigation, theme, isValid, createPostMutation.isPending, createPostMutation.mutate]);
 
   return (
     <ThemedView style={styles.container}>
