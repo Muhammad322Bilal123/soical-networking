@@ -31,13 +31,18 @@ interface PostWithAuthor extends Post {
 
 export default function FeedScreen() {
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data: posts, isLoading, refetch } = useQuery<PostWithAuthor[]>({
+  const {
+    data: posts,
+    isLoading,
+    refetch,
+  } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts"],
     queryFn: async () => {
       const res = await apiRequest("GET", "/api/posts");
@@ -52,7 +57,13 @@ export default function FeedScreen() {
   );
 
   const upvoteMutation = useMutation({
-    mutationFn: async ({ postId, isUpvoted }: { postId: string; isUpvoted: boolean }) => {
+    mutationFn: async ({
+      postId,
+      isUpvoted,
+    }: {
+      postId: string;
+      isUpvoted: boolean;
+    }) => {
       if (isUpvoted) {
         await apiRequest("DELETE", `/api/posts/${postId}/upvote`);
       } else {
@@ -65,7 +76,13 @@ export default function FeedScreen() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: async ({ postId, isSaved }: { postId: string; isSaved: boolean }) => {
+    mutationFn: async ({
+      postId,
+      isSaved,
+    }: {
+      postId: string;
+      isSaved: boolean;
+    }) => {
       if (isSaved) {
         await apiRequest("DELETE", `/api/posts/${postId}/save`);
       } else {
@@ -83,20 +100,6 @@ export default function FeedScreen() {
     setRefreshing(false);
   }, [refetch]);
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.headerLeft}>
-        <ThemedText type="h3">Nexio</ThemedText>
-      </View>
-      <Pressable
-        onPress={() => navigation.navigate("Search")}
-        style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-      >
-        <ThemedIcon set="Feather" name="search" size={24} color={theme.text} />
-      </Pressable>
-    </View>
-  );
-
   const renderItem = ({ item }: { item: PostWithAuthor }) => (
     <PostCard
       post={item}
@@ -106,20 +109,9 @@ export default function FeedScreen() {
       onUpvote={() =>
         upvoteMutation.mutate({ postId: item.id, isUpvoted: item.isUpvoted })
       }
-      onSave={() =>
-        saveMutation.mutate({ postId: item.id, isSaved: item.isSaved })
-      }
+      onSave={() => saveMutation.mutate({ postId: item.id, isSaved: item.isSaved })}
     />
   );
-
-  if (isLoading && !posts) {
-    return (
-      <ThemedView style={styles.container}>
-        <View style={{ paddingTop: insets.top }}>{renderHeader()}</View>
-        <LoadingSpinner fullScreen />
-      </ThemedView>
-    );
-  }
 
   return (
     <ThemedView style={styles.container}>
@@ -127,20 +119,42 @@ export default function FeedScreen() {
         data={posts || []}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={
+          <View
+            style={[
+              styles.header,
+              {
+                paddingTop: insets.top + Spacing.md,
+              },
+            ]}
+          >
+            <View style={styles.headerLeft}>
+              <ThemedText type="h3">Nexio</ThemedText>
+            </View>
+            <Pressable
+              onPress={() => navigation.navigate("Search")}
+              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+            >
+              <ThemedIcon set="Feather" name="search" size={24} color={theme.text} />
+            </Pressable>
+          </View>
+        }
         ListEmptyComponent={
-          <EmptyState
-            icon="book-open"
-            title="No Posts Yet"
-            description="Be the first to share your knowledge with the community!"
-            actionLabel="Create Post"
-            onAction={() => navigation.navigate("CreatePost")}
-          />
+          isLoading ? (
+            <LoadingSpinner fullScreen />
+          ) : (
+            <EmptyState
+              icon="book-open"
+              title="No Posts Yet"
+              description="Be the first to share your knowledge with the community!"
+              actionLabel="Create Post"
+              onAction={() => navigation.navigate("CreatePost")}
+            />
+          )
         }
         contentContainerStyle={[
           styles.list,
           {
-            paddingTop: insets.top,
             paddingBottom: tabBarHeight + Spacing.xxl,
           },
         ]}
