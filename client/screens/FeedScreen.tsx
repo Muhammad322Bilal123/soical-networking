@@ -9,7 +9,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -32,7 +32,7 @@ interface PostWithAuthor extends Post {
 export default function FeedScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
@@ -84,7 +84,7 @@ export default function FeedScreen() {
   }, [refetch]);
 
   const renderHeader = () => (
-    <View style={[styles.header, { marginTop: headerHeight }]}>
+    <View style={styles.header}>
       <View style={styles.headerLeft}>
         <ThemedText type="h3">Nexio</ThemedText>
       </View>
@@ -115,7 +115,7 @@ export default function FeedScreen() {
   if (isLoading && !posts) {
     return (
       <ThemedView style={styles.container}>
-        {renderHeader()}
+        <View style={{ paddingTop: insets.top }}>{renderHeader()}</View>
         <LoadingSpinner fullScreen />
       </ThemedView>
     );
@@ -140,6 +140,7 @@ export default function FeedScreen() {
         contentContainerStyle={[
           styles.list,
           {
+            paddingTop: insets.top,
             paddingBottom: tabBarHeight + Spacing.xxl,
           },
         ]}
