@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { HeaderButton } from "@react-navigation/elements";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { TextInput } from "@/components/TextInput";
@@ -27,6 +28,7 @@ export default function CreatePostScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
+  const insets = useSafeAreaInsets();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -90,7 +92,24 @@ export default function CreatePostScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <KeyboardAwareScrollViewCompat contentContainerStyle={styles.content}>
+      <KeyboardAwareScrollViewCompat
+        style={{ flex: 1 }}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: insets.top + Spacing.md,
+            paddingBottom: insets.bottom + Spacing.lg,
+          },
+        ]}
+      >
+        <TextInput
+          label="Title"
+          value={title}
+          onChangeText={setTitle}
+          placeholder="What's your knowledge about?"
+          maxLength={100}
+        />
+
         <View>
           <ThemedText type="small" style={styles.label}>
             Category
@@ -147,14 +166,6 @@ export default function CreatePostScreen() {
           onChangeText={setTags}
           placeholder="e.g., programming, tips, tutorial"
         />
-        <TextInput
-          label="Title"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="What's your knowledge about?"
-          maxLength={100}
-          style={{ marginTop: Spacing.xl }}
-        />
       </KeyboardAwareScrollViewCompat>
     </ThemedView>
   );
@@ -166,8 +177,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.lg,
     flexGrow: 1,
     gap: Spacing.lg,
   },
