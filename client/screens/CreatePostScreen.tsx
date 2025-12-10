@@ -94,7 +94,7 @@ export default function CreatePostScreen() {
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: insets.top + Spacing.xl * 2,
+            paddingTop: insets.top + Spacing.xl * 3,
             paddingBottom: insets.bottom + Spacing.xl * 2,
           },
         ]}
