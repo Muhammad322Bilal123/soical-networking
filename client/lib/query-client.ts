@@ -1,9 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/**
- * Gets the base URL for the Express API server (e.g., "http://localhost:3000")
- * @returns {string} The API base URL
- */
+const AUTH_STORAGE_KEY = "@knowledgehub_auth";
+
 export function getApiUrl(): string {
   let host = process.env.EXPO_PUBLIC_DOMAIN;
 
@@ -14,6 +13,19 @@ export function getApiUrl(): string {
   let url = new URL(`https://${host}`);
 
   return url.href;
+}
+
+async function getCurrentUserId(): Promise<string | null> {
+  try {
+    const stored = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      const userData = JSON.parse(stored);
+      return userData.id;
+    }
+  } catch (error) {
+    console.error("Failed to get user ID:", error);
+  }
+  return null;
 }
 
 async function throwIfResNotOk(res: Response) {
@@ -30,10 +42,19 @@ export async function apiRequest(
 ): Promise<Response> {
   const baseUrl = getApiUrl();
   const url = new URL(route, baseUrl);
+  const userId = await getCurrentUserId();
+
+  const headers: Record<string, string> = {};
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (userId) {
+    headers["x-user-id"] = userId;
+  }
 
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -50,8 +71,15 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const baseUrl = getApiUrl();
     const url = new URL(queryKey.join("/") as string, baseUrl);
+    const userId = await getCurrentUserId();
+
+    const headers: Record<string, string> = {};
+    if (userId) {
+      headers["x-user-id"] = userId;
+    }
 
     const res = await fetch(url, {
+      headers,
       credentials: "include",
     });
 
@@ -69,7 +97,7 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      staleTime: 30000,
       retry: false,
     },
     mutations: {
