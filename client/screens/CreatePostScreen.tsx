@@ -140,20 +140,20 @@ export default function CreatePostScreen() {
             {content.length}/2000
           </ThemedText>
         </View>
-        <TextInput
-          label="Title"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="What's your knowledge about?"
-          maxLength={100}
-          style={{ marginTop: Spacing.lg }}
-        />
 
         <TextInput
           label="Tags (optional)"
           value={tags}
           onChangeText={setTags}
           placeholder="e.g., programming, tips, tutorial"
+        />
+        <TextInput
+          label="Title"
+          value={title}
+          onChangeText={setTitle}
+          placeholder="What's your knowledge about?"
+          maxLength={100}
+          style={{ marginTop: Spacing.xl }}
         />
       </KeyboardAwareScrollViewCompat>
     </ThemedView>
