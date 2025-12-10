@@ -5,6 +5,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -47,6 +48,17 @@ export default function CreatePostScreen() {
         tags: tags.trim() || null,
         authorId: user?.id,
       });
+
+      if (!res.ok) {
+        let errorData;
+        try {
+          errorData = await res.json();
+        } catch (e) {
+          errorData = { message: res.statusText };
+        }
+        throw new Error(errorData.message || "Failed to create post");
+      }
+
       return res.json();
     },
     onSuccess: () => {
@@ -69,7 +81,10 @@ export default function CreatePostScreen() {
       ),
       headerRight: () => (
         <HeaderButton
-          onPress={() => createPostMutation.mutate()}
+          onPress={() => {
+            Keyboard.dismiss();
+            createPostMutation.mutate();
+          }}
           disabled={!isValid || createPostMutation.isPending}
         >
           {createPostMutation.isPending ? (
@@ -88,7 +103,7 @@ export default function CreatePostScreen() {
         </HeaderButton>
       ),
     });
-  }, [navigation, theme, isValid, createPostMutation.isPending]);
+  }, [navigation, theme, isValid, createPostMutation.mutate]);
 
   return (
     <ThemedView style={styles.container}>
