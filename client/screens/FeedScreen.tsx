@@ -6,21 +6,25 @@ import {
   RefreshControl,
   Pressable,
 } from "react-native";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useFocusEffect,
+} from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { ThemedIcon } from "@/components/ThemedIcon";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useTheme } from "@/hooks/useTheme";
-import { useAuth } from "@/contexts/AuthContext";
 import { apiRequest } from "@/lib/query-client";
-import { Spacing, BorderRadius } from "@/constants/theme";
+import { Spacing } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 import type { Post, User } from "@shared/schema";
 
@@ -32,7 +36,6 @@ interface PostWithAuthor extends Post {
 
 export default function FeedScreen() {
   const { theme } = useTheme();
-  const { user } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
@@ -41,7 +44,17 @@ export default function FeedScreen() {
 
   const { data: posts, isLoading, refetch } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/posts");
+      return res.json();
+    },
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const upvoteMutation = useMutation({
     mutationFn: async ({ postId, isUpvoted }: { postId: string; isUpvoted: boolean }) => {
@@ -76,7 +89,7 @@ export default function FeedScreen() {
   }, [refetch]);
 
   const renderHeader = () => (
-    <View style={styles.header}>
+    <View style={[styles.header, { marginTop: headerHeight }]}>
       <View style={styles.headerLeft}>
         <ThemedText type="h3">Nexio</ThemedText>
       </View>
@@ -84,7 +97,7 @@ export default function FeedScreen() {
         onPress={() => navigation.navigate("Search")}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
-        <Feather name="search" size={24} color={theme.text} />
+        <ThemedIcon set="Feather" name="search" size={24} color={theme.text} />
       </Pressable>
     </View>
   );
@@ -157,7 +170,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxl + 20,
     paddingBottom: Spacing.md,
   },
   headerLeft: {
