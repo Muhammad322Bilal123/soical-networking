@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  Pressable,
   Alert,
   ActivityIndicator,
 } from "react-native";
@@ -90,11 +89,14 @@ export default function CreatePostScreen() {
   }, [navigation, theme, isValid, createPostMutation.isPending]);
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <ThemedView style={styles.container}>
       <KeyboardAwareScrollViewCompat
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: insets.bottom + Spacing.xl },
+          {
+            paddingTop: insets.top + Spacing.md,
+            paddingBottom: insets.bottom + Spacing.xl * 2,
+          },
         ]}
       >
         <TextInput
@@ -171,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
     flexGrow: 1,
   },
   field: {
