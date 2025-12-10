@@ -69,6 +69,7 @@ export interface IStorage {
   updateReportStatus(id: string, status: string): Promise<void>;
 
   searchUsers(query: string): Promise<User[]>;
+  getCommentById(id: string): Promise<Comment | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -182,6 +183,10 @@ export class DatabaseStorage implements IStorage {
       .from(comments)
       .where(eq(comments.postId, postId))
       .orderBy(desc(comments.createdAt));
+  }
+  async getCommentById(id: string): Promise<Comment | undefined> {
+    const [comment] = await db.select().from(comments).where(eq(comments.id, id));
+    return comment || undefined;
   }
 
   async createComment(insertComment: InsertComment): Promise<Comment> {

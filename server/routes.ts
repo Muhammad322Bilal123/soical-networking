@@ -618,6 +618,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to search" });
     }
   });
+  app.delete(
+    "/api/comments/:id",
+    async (req: Request, res: Response) => {
+      try {
+        const { id } = req.params;
+        const currentUserId = req.headers["x-user-id"] as string;
+        const comment = await storage.getCommentById(id);
+        if (!comment) {
+          return res.status(404).json({ message: "Comment not found" });
+        }
+        if (comment.authorId !== currentUserId) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+
+        await storage.deleteComment(id);
+        res.json({ success: true });
+      } catch (error: any) {
+        console.error("Delete comment error:", error);
+        res.status(500).json({ message: "Failed to delete comment" });
+      }
+    }
+  );
 
   const httpServer = createServer(app);
   return httpServer;

@@ -114,6 +114,16 @@ export default function PostDetailScreen() {
       );
     },
   });
+  const deleteCommentMutation = useMutation(
+    (commentId: string) => apiRequest("DELETE", `/api/comments/${commentId}`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["/api/posts", postId, "comments"]);
+        queryClient.invalidateQueries(["/api/posts", postId]);
+      },
+    }
+  );
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -290,6 +300,14 @@ export default function PostDetailScreen() {
                   </ThemedText>
                   <ThemedText type="body">{comment.content}</ThemedText>
                 </View>
+                 {user?.id === comment.authorId && (
+                  <Pressable
+                    onPress={() => deleteCommentMutation.mutate(comment.id)}
+                    style={styles.deleteButton}
+                  >
+                    <ThemedIcon name="trash" size={18} color={theme.textSecondary} />
+                  </Pressable>
+                )}
               </View>
             ))}
           </View>
@@ -424,5 +442,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginBottom: 0,
+  },
+   deleteButton: {
+    marginLeft: Spacing.sm,
+    justifyContent: "center",
   },
 });
