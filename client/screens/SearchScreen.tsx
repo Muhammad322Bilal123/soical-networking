@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    paddingTop: 80,
+    paddingTop: 100,
     paddingHorizontal: Spacing.md,
   },
   searchRow: {
