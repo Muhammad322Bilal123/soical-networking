@@ -216,13 +216,13 @@ export default function SearchScreen() {
         ]}
       >
         <View style={styles.searchRow}>
-          <View style={styles.searchInput}>
+          <View style={styles.searchInputContainer}>
             <Feather name="search" size={20} color={theme.textSecondary} />
             <TextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Search..."
-              style={styles.input}
+              style={styles.searchInput}
               autoFocus
             />
           </View>
@@ -281,15 +281,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing.md,
   },
-  searchInput: {
+  searchInputContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
+    backgroundColor: "#f0f0f0",
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
   },
-  input: {
+  searchInput: {
     flex: 1,
-    marginBottom: 0,
+    height: 40,
   },
   tabs: {
     flexDirection: "row",
