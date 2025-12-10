@@ -90,7 +90,7 @@ export default function CreatePostScreen() {
   }, [navigation, theme, isValid, createPostMutation.isPending]);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <KeyboardAwareScrollViewCompat
         contentContainerStyle={[
           styles.content,
