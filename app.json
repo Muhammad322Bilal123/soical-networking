@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "KnowledgeHub",
-    "slug": "knowledgehub",
+    "name": "Nexio",
+    "slug": "nexio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "knowledgehub",
+    "scheme": "nexio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.knowledgehub.app"
+      "bundleIdentifier": "com.nexio.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.knowledgehub.app"
+      "package": "com.nexio.app"
     },
     "web": {
       "output": "single",
