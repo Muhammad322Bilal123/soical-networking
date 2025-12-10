@@ -1,12 +1,12 @@
 import React from "react";
 import { View, StyleSheet, Pressable, Switch } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing } from "@/constants/theme";
 
 interface SettingsRowProps {
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: React.ComponentProps<typeof ThemedIcon>["name"];
   label: string;
   value?: string;
   onPress?: () => void;
@@ -43,7 +43,8 @@ export function SettingsRow({
             },
           ]}
         >
-          <Feather
+          <ThemedIcon
+            set="Feather"
             name={icon}
             size={20}
             color={danger ? theme.error : theme.primary}
@@ -75,7 +76,8 @@ export function SettingsRow({
             </ThemedText>
           ) : null}
           {showChevron ? (
-            <Feather
+            <ThemedIcon
+              set="Feather"
               name="chevron-right"
               size={20}
               color={theme.textSecondary}

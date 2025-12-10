@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Pressable, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -10,8 +9,9 @@ import FeedScreen from "@/screens/FeedScreen";
 import ExploreScreen from "@/screens/ExploreScreen";
 import NotificationsScreen from "@/screens/NotificationsScreen";
 import MyProfileScreen from "@/screens/MyProfileScreen";
+import { ThemedIcon } from "@/components/ThemedIcon";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
+import { Spacing, Shadows } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export type MainTabParamList = {
@@ -44,7 +44,7 @@ function CreateTabButton() {
         style={[styles.fab, { backgroundColor: theme.primary }]}
         onPress={() => navigation.navigate("CreatePost")}
       >
-        <Feather name="plus" size={28} color="#FFFFFF" />
+        <ThemedIcon set="Feather" name="plus" size={28} color="#FFFFFF" />
       </Pressable>
     </View>
   );
@@ -89,7 +89,7 @@ export default function MainTabNavigator() {
           component={FeedScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Feather name="home" size={size} color={color} />
+              <ThemedIcon set="Feather" name="home" size={size} color={color} />
             ),
           }}
         />
@@ -98,7 +98,12 @@ export default function MainTabNavigator() {
           component={ExploreScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Feather name="compass" size={size} color={color} />
+              <ThemedIcon
+                set="Feather"
+                name="compass"
+                size={size}
+                color={color}
+              />
             ),
           }}
         />
@@ -119,7 +124,7 @@ export default function MainTabNavigator() {
           component={NotificationsScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Feather name="bell" size={size} color={color} />
+              <ThemedIcon set="Feather" name="bell" size={size} color={color} />
             ),
           }}
         />
@@ -128,7 +133,7 @@ export default function MainTabNavigator() {
           component={MyProfileScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Feather name="user" size={size} color={color} />
+              <ThemedIcon set="Feather" name="user" size={size} color={color} />
             ),
           }}
         />

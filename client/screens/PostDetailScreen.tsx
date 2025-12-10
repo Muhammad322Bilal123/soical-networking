@@ -5,17 +5,16 @@ import {
   ScrollView,
   Pressable,
   Alert,
-  FlatList,
 } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { HeaderButton } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { ThemedIcon } from "@/components/ThemedIcon";
 import { UserAvatar } from "@/components/UserAvatar";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Button } from "@/components/Button";
@@ -24,7 +23,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiRequest } from "@/lib/query-client";
-import { Spacing, BorderRadius, Shadows } from "@/constants/theme";
+import { Spacing, Shadows } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 import type { Post, User, Comment } from "@shared/schema";
 
@@ -93,7 +92,9 @@ export default function PostDetailScreen() {
     },
     onSuccess: () => {
       setNewComment("");
-      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/posts", postId, "comments"],
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/posts", postId] });
     },
   });
@@ -107,7 +108,10 @@ export default function PostDetailScreen() {
       });
     },
     onSuccess: () => {
-      Alert.alert("Reported", "Thank you for your report. We'll review it shortly.");
+      Alert.alert(
+        "Reported",
+        "Thank you for your report. We'll review it shortly."
+      );
     },
   });
 
@@ -134,7 +138,7 @@ export default function PostDetailScreen() {
               ]);
             }}
           >
-            <Feather name="flag" size={20} color={theme.textSecondary} />
+            <ThemedIcon set="Feather" name="flag" size={20} color={theme.textSecondary} />
           </HeaderButton>
         </View>
       ),
@@ -177,7 +181,9 @@ export default function PostDetailScreen() {
         <View style={styles.main}>
           <Pressable
             style={styles.authorRow}
-            onPress={() => navigation.navigate("UserProfile", { userId: post.authorId })}
+            onPress={() =>
+              navigation.navigate("UserProfile", { userId: post.authorId })
+            }
           >
             <UserAvatar uri={post.author.profilePicUrl} size="medium" />
             <View style={styles.authorInfo}>
@@ -188,10 +194,7 @@ export default function PostDetailScreen() {
                 {post.author.expertise || "Knowledge Sharer"}
               </ThemedText>
             </View>
-            <Button
-              onPress={() => {}}
-              style={styles.followButton}
-            >
+            <Button onPress={() => {}} style={styles.followButton}>
               Follow
             </Button>
           </Pressable>
@@ -230,7 +233,8 @@ export default function PostDetailScreen() {
               style={styles.interactionItem}
               onPress={() => upvoteMutation.mutate()}
             >
-              <Feather
+              <ThemedIcon
+                set="Feather"
                 name="arrow-up"
                 size={24}
                 color={post.isUpvoted ? theme.primary : theme.text}
@@ -246,7 +250,12 @@ export default function PostDetailScreen() {
             </Pressable>
 
             <View style={styles.interactionItem}>
-              <Feather name="message-circle" size={24} color={theme.text} />
+              <ThemedIcon
+                set="Feather"
+                name="message-circle"
+                size={24}
+                color={theme.text}
+              />
               <ThemedText type="body">{post.commentsCount}</ThemedText>
             </View>
 
@@ -254,7 +263,8 @@ export default function PostDetailScreen() {
               style={styles.interactionItem}
               onPress={() => saveMutation.mutate()}
             >
-              <Feather
+              <ThemedIcon
+                set="Feather"
                 name="bookmark"
                 size={24}
                 color={post.isSaved ? theme.primary : theme.text}
@@ -262,7 +272,7 @@ export default function PostDetailScreen() {
             </Pressable>
 
             <Pressable style={styles.interactionItem}>
-              <Feather name="share" size={24} color={theme.text} />
+              <ThemedIcon set="Feather" name="share" size={24} color={theme.text} />
             </Pressable>
           </View>
 
@@ -307,7 +317,8 @@ export default function PostDetailScreen() {
           disabled={!newComment.trim() || commentMutation.isPending}
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
-          <Feather
+          <ThemedIcon
+            set="Feather"
             name="send"
             size={24}
             color={newComment.trim() ? theme.primary : theme.textSecondary}
