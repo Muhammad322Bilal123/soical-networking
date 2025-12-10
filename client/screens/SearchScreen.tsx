@@ -198,7 +198,7 @@ export default function SearchScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
     >
-      <View style={styles.wrapper}>
+      <View style={styles.headerContainer}>
         <View style={styles.searchRow}>
           <View style={styles.searchInput}>
             <Feather name="search" size={20} color={theme.textSecondary} />
@@ -247,14 +247,14 @@ export default function SearchScreen() {
             </Pressable>
           ))}
         </View>
-
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.content}
-        >
-          {renderContent()}
-        </KeyboardAvoidingView>
       </View>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.content}
+      >
+        {renderContent()}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -263,9 +263,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  wrapper: {
-    flex: 1,
-    paddingTop: 80, // Increased top padding
+  headerContainer: {
+    paddingTop: 40,
     paddingHorizontal: Spacing.md,
   },
   searchRow: {
@@ -296,6 +295,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    paddingHorizontal: Spacing.md,
   },
   list: {
     paddingVertical: Spacing.md,
