@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   userItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: SpACING.md,
+    padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
     backgroundColor: "#fff",
