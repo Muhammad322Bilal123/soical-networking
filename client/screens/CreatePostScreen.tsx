@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -28,6 +29,7 @@ export default function CreatePostScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
+  const insets = useSafeAreaInsets();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -76,8 +78,17 @@ export default function CreatePostScreen() {
   }, [navigation]);
 
   return (
-    <ScreenWrapper withScrollView={false}>
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+    <ScreenWrapper withScrollView={false} safeAreaEdges={["bottom"]}>
+      <View
+        style={[
+          styles.header,
+          {
+            borderBottomColor: theme.border,
+            paddingTop: insets.top + Spacing.sm,
+            paddingBottom: Spacing.sm,
+          },
+        ]}
+      >
         <Pressable onPress={() => navigation.goBack()}>
           <ThemedText type="body" style={{ color: theme.primary }}>
             Cancel
@@ -187,7 +198,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
   },
   titleText: {
