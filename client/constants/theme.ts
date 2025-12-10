@@ -135,29 +135,38 @@ export const Typography = {
   },
 };
 
-export const Shadows = {
-  card: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+export const Shadows = Platform.select({
+  ios: {
+    card: {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+    },
+    fab: {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+    },
+    floatingInput: {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: -2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
   },
-  fab: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
+  android: {
+    card: { elevation: 3 },
+    fab: { elevation: 4 },
+    floatingInput: { elevation: 2 },
   },
-  floatingInput: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+  default: {
+    card: {},
+    fab: {},
+    floatingInput: {},
   },
-};
+})!
 
 export const AvatarSizes = {
   small: 32,

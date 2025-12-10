@@ -70,7 +70,25 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const baseUrl = getApiUrl();
-    const url = new URL(queryKey.join("/") as string, baseUrl);
+    
+    let path = "";
+    let params: Record<string, string> = {};
+    
+    for (const part of queryKey) {
+      if (typeof part === "string") {
+        path += path ? `/${part}` : part;
+      } else if (typeof part === "object" && part !== null) {
+        params = { ...params, ...(part as Record<string, string>) };
+      }
+    }
+    
+    const url = new URL(path, baseUrl);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
+    
     const userId = await getCurrentUserId();
 
     const headers: Record<string, string> = {};

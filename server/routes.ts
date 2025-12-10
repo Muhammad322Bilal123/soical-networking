@@ -223,7 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentUserId = req.headers["x-user-id"] as string;
       const { category } = req.query;
 
-      let posts;
+      let posts: any[];
       if (category && typeof category === "string") {
         posts = await storage.getPostsByCategory(category);
       } else {
