@@ -99,7 +99,7 @@ export default function CreatePostScreen() {
           maxLength={100}
         />
 
-        <View style={styles.field}>
+        <View>
           <ThemedText type="small" style={styles.label}>
             Category
           </ThemedText>
@@ -119,7 +119,7 @@ export default function CreatePostScreen() {
           </ScrollView>
         </View>
 
-        <View style={styles.field}>
+        <View>
           <ThemedText type="small" style={styles.label}>
             Content
           </ThemedText>
@@ -166,12 +166,10 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.md,
-    paddingTop: 60,
+    paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
     flexGrow: 1,
-  },
-  field: {
-    marginBottom: Spacing.md,
+    gap: Spacing.lg,
   },
   label: {
     marginBottom: Spacing.xs,
