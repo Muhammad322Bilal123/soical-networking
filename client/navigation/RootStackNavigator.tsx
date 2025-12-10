@@ -30,7 +30,7 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const ONBOARDING_KEY = "@knowledgehub_onboarding_complete";
+const ONBOARDING_KEY = "@nexio_onboarding_complete";
 
 export default function RootStackNavigator() {
   const screenOptions = useScreenOptions();

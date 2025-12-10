@@ -12,7 +12,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { PostCard } from "@/components/PostCard";
@@ -79,11 +78,6 @@ export default function FeedScreen() {
   const renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <Image
-          source={require("../../assets/images/icon.png")}
-          style={styles.logo}
-          contentFit="contain"
-        />
         <ThemedText type="h3">Nexio</ThemedText>
       </View>
       <Pressable
@@ -170,10 +164,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
-  },
-  logo: {
-    width: 32,
-    height: 32,
   },
   list: {
     paddingHorizontal: Spacing.md,
