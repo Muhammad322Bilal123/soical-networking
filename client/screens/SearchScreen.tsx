@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
@@ -34,6 +35,7 @@ export default function SearchScreen() {
   const { theme } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<SearchTab>("all");
 
@@ -44,6 +46,12 @@ export default function SearchScreen() {
     queryKey: ["/api/search", { q: query }],
     enabled: query.length >= 2,
   });
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   const tabs: { key: SearchTab; label: string }[] = [
     { key: "all", label: "All" },
@@ -196,8 +204,17 @@ export default function SearchScreen() {
   };
 
   return (
-    <ScreenWrapper withScrollView={false} safeAreaEdges={["top"]}>
-      <View style={styles.headerContainer}>
+    <ScreenWrapper withScrollView={false} safeAreaEdges={["bottom"]}>
+      <View
+        style={[
+          styles.headerContainer,
+          {
+            paddingTop: insets.top + Spacing.sm,
+            paddingBottom: Spacing.sm,
+            borderBottomColor: theme.border,
+          },
+        ]}
+      >
         <View style={styles.searchRow}>
           <View style={styles.searchInput}>
             <Feather name="search" size={20} color={theme.textSecondary} />
@@ -256,10 +273,8 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
   searchRow: {
     flexDirection: "row",
