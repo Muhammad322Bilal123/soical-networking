@@ -1,16 +1,12 @@
-
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
   FlatList,
   Pressable,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
@@ -20,6 +16,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Categories } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -57,8 +54,13 @@ export default function SearchScreen() {
 
   const renderUserItem = ({ item }: { item: User }) => (
     <Pressable
-      style={[styles.userItem, { backgroundColor: theme.backgroundDefault }]}
-      onPress={() => navigation.navigate("UserProfile", { userId: item.id })}
+      style={[
+        styles.userItem,
+        { backgroundColor: theme.backgroundDefault },
+      ]}
+      onPress={() =>
+        navigation.navigate("UserProfile", { userId: item.id })
+      }
     >
       <UserAvatar uri={item.profilePicUrl} size="medium" />
       <View style={styles.userInfo}>
@@ -150,29 +152,27 @@ export default function SearchScreen() {
       );
     }
 
-    if (activeTab === "users" || activeTab === "all") {
-      const users = searchResults?.users || [];
-      if (activeTab === "users") {
-        return (
-          <FlatList
-            data={users}
-            renderItem={renderUserItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            ListEmptyComponent={
-              <EmptyState
-                icon="users"
-                title="No Users Found"
-                description="Try a different search term"
-              />
-            }
-          />
-        );
-      }
+    const users = searchResults?.users || [];
+    if (activeTab === "users") {
+      return (
+        <FlatList
+          data={users}
+          renderItem={renderUserItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <EmptyState
+              icon="users"
+              title="No Users Found"
+              description="Try a different search term"
+            />
+          }
+        />
+      );
     }
 
-    if (activeTab === "posts" || activeTab === "all") {
-      const posts = searchResults?.posts || [];
+    const posts = searchResults?.posts || [];
+    if (activeTab === "all" || activeTab === "posts") {
       return (
         <FlatList
           data={posts}
@@ -196,10 +196,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      edges={["top"]}
-    >
+    <ScreenWrapper withScrollView={false} safeAreaEdges={["top"]}>
       <View style={styles.headerContainer}>
         <View style={styles.searchRow}>
           <View style={styles.searchInput}>
@@ -251,24 +248,16 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.content}
-      >
-        {renderContent()}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <View style={styles.content}>{renderContent()}</View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   headerContainer: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm, // Apply vertical padding
-    backgroundColor: "#fff", // Set a background color
+    paddingVertical: Spacing.sm,
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
@@ -290,7 +279,7 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     gap: Spacing.sm,
-    marginTop: Spacing.lg, // Space between search and tabs
+    marginTop: Spacing.lg,
   },
   tab: {
     paddingHorizontal: Spacing.md,
