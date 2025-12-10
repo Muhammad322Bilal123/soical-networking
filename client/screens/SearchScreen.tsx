@@ -198,6 +198,7 @@ export default function SearchScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
+      edges={["top"]}
     >
       <View style={styles.headerContainer}>
         <View style={styles.searchRow}>
@@ -265,8 +266,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    paddingTop: 100,
     paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm, // Apply vertical padding
+    backgroundColor: "#fff", // Set a background color
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   searchRow: {
     flexDirection: "row",
@@ -286,8 +290,7 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     gap: Spacing.sm,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
+    marginTop: Spacing.lg, // Space between search and tabs
   },
   tab: {
     paddingHorizontal: Spacing.md,
@@ -296,9 +299,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: Spacing.md,
   },
   list: {
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     flexGrow: 1,
   },
@@ -328,6 +331,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
+    backgroundColor: "#fff",
   },
   userInfo: {
     flex: 1,
@@ -343,5 +347,6 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
+    backgroundColor: "#fff",
   },
 });
