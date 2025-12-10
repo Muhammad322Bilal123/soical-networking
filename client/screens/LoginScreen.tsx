@@ -6,13 +6,14 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { Button } from "@/components/Button";
-import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { TextInput } from "@/components/TextInput";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,7 +29,6 @@ export default function LoginScreen({
   onForgotPassword,
 }: LoginScreenProps) {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,114 +48,114 @@ export default function LoginScreen({
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <KeyboardAwareScrollViewCompat
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: insets.top + Spacing.xxl,
-            paddingBottom: insets.bottom + Spacing.xl,
-          },
-        ]}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
       >
-        <View style={styles.header}>
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <ThemedText type="h2" style={styles.title}>
-            Welcome Back
-          </ThemedText>
-          <ThemedText
-            type="body"
-            style={[styles.subtitle, { color: theme.textSecondary }]}
-          >
-            Sign in to continue sharing knowledge
-          </ThemedText>
-        </View>
-
-        <View style={styles.form}>
-          <TextInput
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
-
-          <TextInput
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Enter your password"
-            secureTextEntry={!showPassword}
-            autoCapitalize="none"
-            rightIcon={
-              <Pressable onPress={() => setShowPassword(!showPassword)}>
-                <Feather
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color={theme.textSecondary}
-                />
-              </Pressable>
-            }
-          />
-
-          <Pressable onPress={onForgotPassword} style={styles.forgotPassword}>
-            <ThemedText type="small" style={{ color: theme.primary }}>
-              Forgot Password?
-            </ThemedText>
-          </Pressable>
-
-          <Button
-            onPress={handleLogin}
-            disabled={isLoading}
-            style={styles.loginButton}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              "Sign In"
-            )}
-          </Button>
-        </View>
-
-        <View style={styles.divider}>
-          <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
-          <ThemedText
-            type="small"
-            style={[styles.dividerText, { color: theme.textSecondary }]}
-          >
-            OR
-          </ThemedText>
-          <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
-        </View>
-
-        <Pressable
-          style={[styles.socialButton, { borderColor: theme.border }]}
-          onPress={() => Alert.alert("Coming Soon", "Google sign-in will be available soon")}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
         >
-          <Feather name="globe" size={20} color={theme.text} />
-          <ThemedText type="body" style={styles.socialButtonText}>
-            Continue with Google
-          </ThemedText>
-        </Pressable>
+          <View style={styles.header}>
+            <Image
+              source={require("../../assets/images/icon.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <ThemedText type="h2" style={styles.title}>
+              Welcome Back
+            </ThemedText>
+            <ThemedText
+              type="body"
+              style={[styles.subtitle, { color: theme.textSecondary }]}
+            >
+              Sign in to continue sharing knowledge
+            </ThemedText>
+          </View>
 
-        <View style={styles.footer}>
-          <ThemedText type="body" style={{ color: theme.textSecondary }}>
-            Don't have an account?{" "}
-          </ThemedText>
-          <Pressable onPress={onSwitchToSignup}>
-            <ThemedText type="body" style={{ color: theme.primary }}>
-              Sign Up
+          <View style={styles.form}>
+            <TextInput
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+
+            <TextInput
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Enter your password"
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              rightIcon={
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
+                  <Feather
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={20}
+                    color={theme.textSecondary}
+                  />
+                </Pressable>
+              }
+            />
+
+            <Pressable onPress={onForgotPassword} style={styles.forgotPassword}>
+              <ThemedText type="small" style={{ color: theme.primary }}>
+                Forgot Password?
+              </ThemedText>
+            </Pressable>
+
+            <Button
+              onPress={handleLogin}
+              disabled={isLoading}
+              style={styles.loginButton}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </View>
+
+          <View style={styles.divider}>
+            <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
+            <ThemedText
+              type="small"
+              style={[styles.dividerText, { color: theme.textSecondary }]}
+            >
+              OR
+            </ThemedText>
+            <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
+          </View>
+
+          <Pressable
+            style={[styles.socialButton, { borderColor: theme.border }]}
+            onPress={() => Alert.alert("Coming Soon", "Google sign-in will be available soon")}
+          >
+            <Feather name="globe" size={20} color={theme.text} />
+            <ThemedText type="body" style={styles.socialButtonText}>
+              Continue with Google
             </ThemedText>
           </Pressable>
-        </View>
-      </KeyboardAwareScrollViewCompat>
-    </ThemedView>
+
+          <View style={styles.footer}>
+            <ThemedText type="body" style={{ color: theme.textSecondary }}>
+              Don't have an account?{" "}
+            </ThemedText>
+            <Pressable onPress={onSwitchToSignup}>
+              <ThemedText type="body" style={{ color: theme.primary }}>
+                Sign Up
+              </ThemedText>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.lg,
     flexGrow: 1,
   },
   header: {

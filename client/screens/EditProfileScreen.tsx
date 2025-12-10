@@ -5,32 +5,35 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderButton } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { TextInput } from "@/components/TextInput";
 import { UserAvatar } from "@/components/UserAvatar";
-import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
-import { Spacing, Categories } from "@/constants/theme";
+import { Spacing } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export default function EditProfileScreen() {
   const { theme } = useTheme();
   const { user, updateUser } = useAuth();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const insets = useSafeAreaInsets();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [name, setName] = useState(user?.name || "");
   const [bio, setBio] = useState(user?.bio || "");
   const [expertise, setExpertise] = useState(user?.expertise || "");
-  const [profilePicUrl, setProfilePicUrl] = useState(user?.profilePicUrl || "");
+  const [profilePicUrl, setProfilePicUrl] = useState(
+    user?.profilePicUrl || ""
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   const hasChanges =
@@ -77,10 +80,7 @@ export default function EditProfileScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderButton
-          onPress={handleSave}
-          disabled={!hasChanges || isSaving}
-        >
+        <HeaderButton onPress={handleSave} disabled={!hasChanges || isSaving}>
           {isSaving ? (
             <ActivityIndicator size="small" color={theme.primary} />
           ) : (
@@ -100,60 +100,64 @@ export default function EditProfileScreen() {
   }, [navigation, theme, hasChanges, isSaving, name, bio, expertise, profilePicUrl]);
 
   return (
-    <ThemedView style={styles.container}>
-      <KeyboardAwareScrollViewCompat
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + Spacing.xl },
-        ]}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+        keyboardVerticalOffset={100}
       >
-        <View style={styles.avatarSection}>
-          <Pressable onPress={handlePickImage}>
-            <UserAvatar uri={profilePicUrl} size="profile" />
-            <View
-              style={[
-                styles.changePhotoButton,
-                { backgroundColor: theme.primary },
-              ]}
-            >
-              <ThemedText type="small" style={{ color: "#FFFFFF" }}>
-                Change
-              </ThemedText>
-            </View>
-          </Pressable>
-        </View>
-
-        <TextInput
-          label="Name"
-          value={name}
-          onChangeText={setName}
-          placeholder="Your name"
-          autoCapitalize="words"
-        />
-
-        <TextInput
-          label="Bio"
-          value={bio}
-          onChangeText={setBio}
-          placeholder="Tell us about yourself..."
-          multiline
-          maxLength={160}
-        />
-        <ThemedText
-          type="caption"
-          style={[styles.charCount, { color: theme.textSecondary }]}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
         >
-          {bio.length}/160
-        </ThemedText>
+          <View style={styles.avatarSection}>
+            <Pressable onPress={handlePickImage}>
+              <UserAvatar uri={profilePicUrl} size="profile" />
+              <View
+                style={[
+                  styles.changePhotoButton,
+                  { backgroundColor: theme.primary },
+                ]}
+              >
+                <ThemedText type="small" style={{ color: "#FFFFFF" }}>
+                  Change
+                </ThemedText>
+              </View>
+            </Pressable>
+          </View>
 
-        <TextInput
-          label="Expertise"
-          value={expertise}
-          onChangeText={setExpertise}
-          placeholder="e.g., Software Engineering, Data Science"
-        />
-      </KeyboardAwareScrollViewCompat>
-    </ThemedView>
+          <TextInput
+            label="Name"
+            value={name}
+            onChangeText={setName}
+            placeholder="Your name"
+            autoCapitalize="words"
+          />
+
+          <TextInput
+            label="Bio"
+            value={bio}
+            onChangeText={setBio}
+            placeholder="Tell us about yourself..."
+            multiline
+            maxLength={160}
+          />
+          <ThemedText
+            type="caption"
+            style={[styles.charCount, { color: theme.textSecondary }]}
+          >
+            {bio.length}/160
+          </ThemedText>
+
+          <TextInput
+            label="Expertise"
+            value={expertise}
+            onChangeText={setExpertise}
+            placeholder="e.g., Software Engineering, Data Science"
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

@@ -4,14 +4,15 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { TextInput } from "@/components/TextInput";
 import { PostCard } from "@/components/PostCard";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -33,8 +34,8 @@ type SearchTab = "all" | "posts" | "users" | "categories";
 
 export default function SearchScreen() {
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const insets = useSafeAreaInsets();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<SearchTab>("all");
 
@@ -75,7 +76,10 @@ export default function SearchScreen() {
 
   const renderCategoryItem = ({ item }: { item: string }) => (
     <Pressable
-      style={[styles.categoryItem, { backgroundColor: theme.backgroundDefault }]}
+      style={[
+        styles.categoryItem,
+        { backgroundColor: theme.backgroundDefault },
+      ]}
       onPress={() => {
         navigation.goBack();
       }}
@@ -191,8 +195,10 @@ export default function SearchScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={[styles.header, { paddingTop: Spacing.md }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <View style={styles.header}>
         <View style={styles.searchRow}>
           <View style={styles.searchInput}>
             <Feather name="search" size={20} color={theme.textSecondary} />
@@ -229,7 +235,10 @@ export default function SearchScreen() {
               <ThemedText
                 type="small"
                 style={{
-                  color: activeTab === tab.key ? theme.primary : theme.textSecondary,
+                  color:
+                    activeTab === tab.key
+                      ? theme.primary
+                      : theme.textSecondary,
                   fontWeight: activeTab === tab.key ? "600" : "400",
                 }}
               >
@@ -240,10 +249,13 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      <View style={[styles.content, { paddingBottom: insets.bottom }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.content}
+      >
         {renderContent()}
-      </View>
-    </ThemedView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -253,6 +265,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
   },
   searchRow: {
     flexDirection: "row",

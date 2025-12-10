@@ -6,17 +6,17 @@ import {
   Alert,
   ActivityIndicator,
   Keyboard,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { HeaderButton } from "@react-navigation/elements";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { TextInput } from "@/components/TextInput";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiRequest } from "@/lib/query-client";
@@ -29,7 +29,6 @@ export default function CreatePostScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
-  const insets = useSafeAreaInsets();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -83,8 +82,6 @@ export default function CreatePostScreen() {
       headerRight: () => (
         <HeaderButton
           onPress={() => {
-            // This is the critical fix for iOS.
-            // Dismiss the keyboard before mutating to ensure the press event registers.
             Keyboard.dismiss();
             createPostMutation.mutate();
           }}
@@ -109,83 +106,83 @@ export default function CreatePostScreen() {
   }, [navigation, theme, isValid, createPostMutation.isPending, createPostMutation.mutate]);
 
   return (
-    <ThemedView style={styles.container}>
-      <KeyboardAwareScrollViewCompat
-        style={{ flex: 1 }}
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: insets.top + Spacing.md,
-            paddingBottom: insets.bottom + Spacing.lg,
-          },
-        ]}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+        keyboardVerticalOffset={100}
       >
-        <TextInput
-          label="Title"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="What's your knowledge about?"
-          maxLength={100}
-        />
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          <TextInput
+            label="Title"
+            value={title}
+            onChangeText={setTitle}
+            placeholder="What's your knowledge about?"
+            maxLength={100}
+          />
 
-        <View>
-          <ThemedText type="small" style={styles.label}>
-            Category
-          </ThemedText>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categories}
-          >
-            {Categories.map((cat) => (
-              <CategoryBadge
-                key={cat}
-                category={cat}
-                selected={category === cat}
-                onPress={() => setCategory(cat)}
-              />
-            ))}
-          </ScrollView>
-        </View>
-
-        <View>
-          <ThemedText type="small" style={styles.label}>
-            Content
-          </ThemedText>
-          <View
-            style={[
-              styles.contentInput,
-              {
-                backgroundColor: theme.backgroundDefault,
-                borderColor: theme.border,
-              },
-            ]}
-          >
-            <TextInput
-              value={content}
-              onChangeText={setContent}
-              placeholder="Share your knowledge, insights, or guide..."
-              multiline
-              maxLength={2000}
-              style={styles.textArea}
-            />
+          <View>
+            <ThemedText type="small" style={styles.label}>
+              Category
+            </ThemedText>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categories}
+            >
+              {Categories.map((cat) => (
+                <CategoryBadge
+                  key={cat}
+                  category={cat}
+                  selected={category === cat}
+                  onPress={() => setCategory(cat)}
+                />
+              ))}
+            </ScrollView>
           </View>
-          <ThemedText
-            type="caption"
-            style={[styles.charCount, { color: theme.textSecondary }]}
-          >
-            {content.length}/2000
-          </ThemedText>
-        </View>
 
-        <TextInput
-          label="Tags (optional)"
-          value={tags}
-          onChangeText={setTags}
-          placeholder="e.g., programming, tips, tutorial"
-        />
-      </KeyboardAwareScrollViewCompat>
-    </ThemedView>
+          <View>
+            <ThemedText type="small" style={styles.label}>
+              Content
+            </ThemedText>
+            <View
+              style={[
+                styles.contentInput,
+                {
+                  backgroundColor: theme.backgroundDefault,
+                  borderColor: theme.border,
+                },
+              ]}
+            >
+              <TextInput
+                value={content}
+                onChangeText={setContent}
+                placeholder="Share your knowledge, insights, or guide..."
+                multiline
+                maxLength={2000}
+                style={styles.textArea}
+              />
+            </View>
+            <ThemedText
+              type="caption"
+              style={[styles.charCount, { color: theme.textSecondary }]}
+            >
+              {content.length}/2000
+            </ThemedText>
+          </View>
+
+          <TextInput
+            label="Tags (optional)"
+            value={tags}
+            onChangeText={setTags}
+            placeholder="e.g., programming, tips, tutorial"
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -195,6 +192,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.lg,
     flexGrow: 1,
     gap: Spacing.lg,
   },
