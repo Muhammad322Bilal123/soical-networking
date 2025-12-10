@@ -166,7 +166,8 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.lg,
+    paddingTop: 40,
+    paddingBottom: Spacing.lg,
     flexGrow: 1,
   },
   field: {
