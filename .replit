@@ -1,8 +1,8 @@
 entrypoint = "README.md"
-modules = ["nodejs-22", "postgresql-16"]
+modules = ["nodejs-20", "web"]
 
 [nix]
-channel = "stable-24_05"
+channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "cloudrun"
@@ -18,6 +18,10 @@ localPort = 8081
 externalPort = 80
 
 [[ports]]
+localPort = 34457
+externalPort = 3001
+
+[[ports]]
 localPort = 35295
 externalPort = 3000
 
@@ -27,6 +31,7 @@ PORT = "5000"
 [agent]
 stack = "EXPO"
 integrations = ["javascript_database:1.0.0"]
+expertMode = true
 
 [workflows]
 runButton = "Project"
