@@ -84,7 +84,7 @@ export default function FeedScreen() {
           style={styles.logo}
           contentFit="contain"
         />
-        <ThemedText type="h3">KnowledgeHub</ThemedText>
+        <ThemedText type="h3">Nexio</ThemedText>
       </View>
       <Pressable
         onPress={() => navigation.navigate("Search")}
