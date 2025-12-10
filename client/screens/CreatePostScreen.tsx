@@ -91,14 +91,6 @@ export default function CreatePostScreen() {
   return (
     <ThemedView style={styles.container}>
       <KeyboardAwareScrollViewCompat contentContainerStyle={styles.content}>
-        <TextInput
-          label="Title"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="What's your knowledge about?"
-          maxLength={100}
-        />
-
         <View>
           <ThemedText type="small" style={styles.label}>
             Category
@@ -148,6 +140,14 @@ export default function CreatePostScreen() {
             {content.length}/2000
           </ThemedText>
         </View>
+        <TextInput
+          label="Title"
+          value={title}
+          onChangeText={setTitle}
+          placeholder="What's your knowledge about?"
+          maxLength={100}
+          style={{ marginTop: Spacing.lg }}
+        />
 
         <TextInput
           label="Tags (optional)"
