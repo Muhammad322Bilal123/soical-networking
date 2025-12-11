@@ -89,35 +89,41 @@ export default function CreatePostScreen() {
           },
         ]}
       >
-        <Pressable onPress={() => navigation.goBack()}>
-          <ThemedText type="body" style={{ color: theme.primary }}>
-            Cancel
-          </ThemedText>
-        </Pressable>
-        <ThemedText type="body" style={styles.titleText}>
-          New Post
-        </ThemedText>
-        <Pressable
-          onPress={() => {
-            Keyboard.dismiss();
-            createPostMutation.mutate();
-          }}
-          disabled={!isValid || createPostMutation.isPending}
-        >
-          {createPostMutation.isPending ? (
-            <ActivityIndicator size="small" color={theme.primary} />
-          ) : (
-            <ThemedText
-              type="body"
-              style={{
-                color: isValid ? theme.primary : theme.textSecondary,
-                fontWeight: "600",
-              }}
-            >
-              Publish
+        <View style={styles.headerButton}>
+            <Pressable onPress={() => navigation.goBack()}>
+              <ThemedText type="body" style={{ color: theme.primary }}>
+                Cancel
+              </ThemedText>
+            </Pressable>
+        </View>
+        <View style={styles.headerTitle}>
+            <ThemedText type="body" style={styles.titleText}>
+              New Post
             </ThemedText>
-          )}
-        </Pressable>
+        </View>
+        <View style={styles.headerButton}>
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                createPostMutation.mutate();
+              }}
+              disabled={!isValid || createPostMutation.isPending}
+            >
+              {createPostMutation.isPending ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <ThemedText
+                  type="body"
+                  style={{
+                    color: isValid ? theme.primary : theme.textSecondary,
+                    fontWeight: "600",
+                  }}
+                >
+                  Publish
+                </ThemedText>
+              )}
+            </Pressable>
+        </View>
       </View>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
@@ -200,8 +206,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderBottomWidth: 1,
   },
+  headerButton: {
+    width: 80,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+  },
   titleText: {
     fontWeight: "600",
+    textAlign: 'center',
   },
   contentContainer: {
     paddingHorizontal: Spacing.md,
