@@ -115,30 +115,28 @@ export default function FeedScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + Spacing.md,
+          },
+        ]}
+      >
+        <View style={styles.headerLeft}>
+          <ThemedText type="h3">Nexio</ThemedText>
+        </View>
+        <Pressable
+          onPress={() => navigation.navigate("Search")}
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+        >
+          <ThemedIcon set="Feather" name="search" size={24} color={theme.text} />
+        </Pressable>
+      </View>
       <FlatList
         data={posts || []}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <View
-            style={[
-              styles.header,
-              {
-                paddingTop: insets.top + Spacing.md,
-              },
-            ]}
-          >
-            <View style={styles.headerLeft}>
-              <ThemedText type="h3">Nexio</ThemedText>
-            </View>
-            <Pressable
-              onPress={() => navigation.navigate("Search")}
-              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-            >
-              <ThemedIcon set="Feather" name="search" size={24} color={theme.text} />
-            </Pressable>
-          </View>
-        }
         ListEmptyComponent={
           isLoading ? (
             <LoadingSpinner fullScreen />
@@ -181,6 +179,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.md,
+    backgroundColor: 'white',
   },
   headerLeft: {
     flexDirection: "row",
