@@ -13,10 +13,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedIcon } from "@/components/ThemedIcon";
+import { ThemedText } from "@/components/ThemedText";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { GradientText } from "@/components/GradientText";
 import { useTheme } from "@/hooks/useTheme";
 import { apiRequest } from "@/lib/query-client";
 import { Spacing } from "@/constants/theme";
@@ -124,14 +124,9 @@ export default function FeedScreen() {
         ]}
       >
         <View style={styles.headerLeft}>
-          <GradientText
-            style={styles.title}
-            colors={["#6C63FF", "#FF6584"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
+          <ThemedText style={styles.title}>
             Nexio
-          </GradientText>
+          </ThemedText>
         </View>
         <Pressable
           onPress={() => navigation.navigate("Search")}
