@@ -99,6 +99,15 @@ export const reports = pgTable("reports", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const postImages = pgTable("post_images", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  postId: varchar("post_id").notNull().references(() => posts.id),
+  imageUrl: text("image_url").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   reputationScore: true,
@@ -134,6 +143,11 @@ export const insertReportSchema = createInsertSchema(reports).omit({
   createdAt: true,
 });
 
+export const insertPostImageSchema = createInsertSchema(postImages).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Post = typeof posts.$inferSelect;
@@ -147,3 +161,5 @@ export type InsertReport = z.infer<typeof insertReportSchema>;
 export type Upvote = typeof upvotes.$inferSelect;
 export type Save = typeof saves.$inferSelect;
 export type Follower = typeof followers.$inferSelect;
+export type PostImage = typeof postImages.$inferSelect;
+export type InsertPostImage = z.infer<typeof insertPostImageSchema>;

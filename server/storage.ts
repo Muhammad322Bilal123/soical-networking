@@ -7,6 +7,7 @@ import {
   followers,
   notifications,
   reports,
+  postImages,
   type User,
   type InsertUser,
   type Post,
@@ -20,6 +21,8 @@ import {
   type Upvote,
   type Save,
   type Follower,
+  type PostImage,
+  type InsertPostImage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, ilike, sql } from "drizzle-orm";
@@ -70,6 +73,10 @@ export interface IStorage {
 
   searchUsers(query: string): Promise<User[]>;
   getCommentById(id: string): Promise<Comment | undefined>;
+
+  getPostImages(postId: string): Promise<PostImage[]>;
+  createPostImages(images: InsertPostImage[]): Promise<PostImage[]>;
+  deletePostImages(postId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -432,6 +439,24 @@ export class DatabaseStorage implements IStorage {
         or(ilike(users.name, `%${query}%`), ilike(users.email, `%${query}%`))
       )
       .limit(20);
+  }
+
+  async getPostImages(postId: string): Promise<PostImage[]> {
+    return db
+      .select()
+      .from(postImages)
+      .where(eq(postImages.postId, postId))
+      .orderBy(postImages.createdAt);
+  }
+
+  async createPostImages(images: InsertPostImage[]): Promise<PostImage[]> {
+    if (images.length === 0) return [];
+    const createdImages = await db.insert(postImages).values(images).returning();
+    return createdImages;
+  }
+
+  async deletePostImages(postId: string): Promise<void> {
+    await db.delete(postImages).where(eq(postImages.postId, postId));
   }
 }
 

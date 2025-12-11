@@ -130,12 +130,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const isSaved = currentUserId
             ? await storage.hasSaved(post.id, currentUserId)
             : false;
+          const images = await storage.getPostImages(post.id);
 
           return {
             ...post,
             author: user ? { ...user, password: undefined } : null,
             isUpvoted,
             isSaved,
+            images,
           };
         })
       );
@@ -239,12 +241,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const isSaved = currentUserId
             ? await storage.hasSaved(post.id, currentUserId)
             : false;
+          const images = await storage.getPostImages(post.id);
 
           return {
             ...post,
             author: author ? { ...author, password: undefined } : null,
             isUpvoted,
             isSaved,
+            images,
           };
         })
       );
@@ -274,12 +278,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const isSaved = currentUserId
             ? await storage.hasSaved(post.id, currentUserId)
             : false;
+          const images = await storage.getPostImages(post.id);
 
           return {
             ...post,
             author: author ? { ...author, password: undefined } : null,
             isUpvoted,
             isSaved,
+            images,
           };
         })
       );
@@ -308,12 +314,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isSaved = currentUserId
         ? await storage.hasSaved(id, currentUserId)
         : false;
+      const images = await storage.getPostImages(id);
 
       res.json({
         ...post,
         author: author ? { ...author, password: undefined } : null,
         isUpvoted,
         isSaved,
+        images,
       });
     } catch (error: any) {
       console.error("Get post error:", error);
@@ -323,10 +331,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/posts", async (req: Request, res: Response) => {
     try {
-      const { title, content, category, tags, authorId, coverImageUrl } = req.body;
+      const { title, content, category, tags, authorId, coverImageUrl, images } = req.body;
 
       if (!title || !content || !category || !authorId) {
         return res.status(400).json({ message: "Title, content, category, and authorId are required" });
+      }
+
+      // Validate images if provided
+      if (images && Array.isArray(images)) {
+        if (images.length > 5) {
+          return res.status(400).json({ message: "Maximum 5 images allowed per post" });
+        }
+        for (const img of images) {
+          if (typeof img !== "string") {
+            return res.status(400).json({ message: "Invalid image format" });
+          }
+          // Check if it's a valid base64 data URL
+          if (!img.startsWith("data:image/")) {
+            return res.status(400).json({ message: "Invalid image format. Only jpg, png, gif allowed" });
+          }
+          // Check file type
+          const validTypes = ["data:image/jpeg", "data:image/png", "data:image/gif", "data:image/jpg"];
+          const hasValidType = validTypes.some(type => img.startsWith(type));
+          if (!hasValidType) {
+            return res.status(400).json({ message: "Invalid image type. Only jpg, png, gif allowed" });
+          }
+          // Check size (base64 is ~1.33x larger, so 5MB = ~6.67MB in base64)
+          if (img.length > 7 * 1024 * 1024) {
+            return res.status(400).json({ message: "Image too large. Maximum 5MB per image" });
+          }
+        }
       }
 
       const post = await storage.createPost({
@@ -338,7 +372,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         coverImageUrl: coverImageUrl || null,
       });
 
-      res.json(post);
+      // Save images if provided
+      if (images && Array.isArray(images) && images.length > 0) {
+        const imageRecords = images.map((imageUrl: string) => ({
+          postId: post.id,
+          imageUrl,
+        }));
+        await storage.createPostImages(imageRecords);
+      }
+
+      // Return post with images
+      const postImages = await storage.getPostImages(post.id);
+      res.json({ ...post, images: postImages });
     } catch (error: any) {
       console.error("Create post error:", error);
       res.status(500).json({ message: "Failed to create post" });

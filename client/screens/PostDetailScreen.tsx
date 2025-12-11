@@ -25,12 +25,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { apiRequest } from "@/lib/query-client";
 import { Spacing, Shadows } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
-import type { Post, User, Comment } from "@shared/schema";
+import type { Post, User, Comment, PostImage } from "@shared/schema";
 
 interface PostDetail extends Post {
   author: User;
   isUpvoted: boolean;
   isSaved: boolean;
+  images?: PostImage[];
 }
 
 interface CommentWithAuthor extends Comment {
@@ -222,6 +223,25 @@ export default function PostDetailScreen() {
             {post.content}
           </ThemedText>
 
+          {post.images && post.images.length > 0 ? (
+            <View style={styles.imagesSection}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.imagesScroll}
+              >
+                {post.images.map((img, index) => (
+                  <Image
+                    key={img.id || index}
+                    source={{ uri: img.imageUrl }}
+                    style={styles.postImage}
+                    contentFit="cover"
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+
           {post.tags ? (
             <View style={styles.tags}>
               {post.tags.split(",").map((tag, index) => (
@@ -386,6 +406,17 @@ const styles = StyleSheet.create({
   },
   body: {
     marginBottom: Spacing.lg,
+  },
+  imagesSection: {
+    marginBottom: Spacing.lg,
+  },
+  imagesScroll: {
+    gap: Spacing.sm,
+  },
+  postImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
   },
   tags: {
     flexDirection: "row",

@@ -7,7 +7,11 @@ import {
   Keyboard,
   Pressable,
   ScrollView,
+  Platform,
 } from "react-native";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -23,6 +27,9 @@ import { apiRequest } from "@/lib/query-client";
 import { Spacing, Categories } from "@/constants/theme";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
+const MAX_IMAGES = 5;
+const MAX_IMAGE_SIZE_MB = 5;
+
 export default function CreatePostScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -35,9 +42,63 @@ export default function CreatePostScreen() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState("");
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const isValid =
     title.trim().length > 0 && content.trim().length > 0 && category;
+
+  const pickImages = async () => {
+    if (Platform.OS === "web") {
+      Alert.alert("Info", "Image picker works best in Expo Go on your device");
+      return;
+    }
+
+    if (selectedImages.length >= MAX_IMAGES) {
+      Alert.alert("Limit Reached", `Maximum ${MAX_IMAGES} images allowed`);
+      return;
+    }
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Required",
+        "Please allow access to your photo library to upload images"
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsMultipleSelection: true,
+      selectionLimit: MAX_IMAGES - selectedImages.length,
+      quality: 0.7,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets) {
+      const newImages: string[] = [];
+      for (const asset of result.assets) {
+        if (asset.base64) {
+          const mimeType = asset.mimeType || "image/jpeg";
+          if (!["image/jpeg", "image/png", "image/gif"].includes(mimeType)) {
+            Alert.alert("Invalid Format", "Only JPG, PNG, and GIF images are allowed");
+            continue;
+          }
+          const base64Size = (asset.base64.length * 3) / 4;
+          if (base64Size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+            Alert.alert("Image Too Large", `Images must be under ${MAX_IMAGE_SIZE_MB}MB`);
+            continue;
+          }
+          newImages.push(`data:${mimeType};base64,${asset.base64}`);
+        }
+      }
+      setSelectedImages((prev) => [...prev, ...newImages].slice(0, MAX_IMAGES));
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const createPostMutation = useMutation({
     mutationFn: async () => {
@@ -47,6 +108,7 @@ export default function CreatePostScreen() {
         category,
         tags: tags.trim() || null,
         authorId: user?.id,
+        images: selectedImages.length > 0 ? selectedImages : undefined,
       });
 
       if (!res.ok) {
@@ -187,6 +249,53 @@ export default function CreatePostScreen() {
           </ThemedText>
         </View>
 
+        <View>
+          <View style={styles.labelRow}>
+            <ThemedText type="small" style={styles.label}>
+              Images (optional)
+            </ThemedText>
+            <ThemedText type="caption" style={{ color: theme.textSecondary }}>
+              {selectedImages.length}/{MAX_IMAGES}
+            </ThemedText>
+          </View>
+          
+          <View style={styles.imagesContainer}>
+            {selectedImages.map((uri, index) => (
+              <View key={index} style={styles.imageWrapper}>
+                <Image
+                  source={{ uri }}
+                  style={styles.imagePreview}
+                  contentFit="cover"
+                />
+                <Pressable
+                  style={[styles.removeButton, { backgroundColor: theme.error }]}
+                  onPress={() => removeImage(index)}
+                >
+                  <Feather name="x" size={14} color="#fff" />
+                </Pressable>
+              </View>
+            ))}
+            
+            {selectedImages.length < MAX_IMAGES ? (
+              <Pressable
+                style={[
+                  styles.addImageButton,
+                  {
+                    backgroundColor: theme.backgroundDefault,
+                    borderColor: theme.border,
+                  },
+                ]}
+                onPress={pickImages}
+              >
+                <Feather name="plus" size={24} color={theme.textSecondary} />
+                <ThemedText type="caption" style={{ color: theme.textSecondary }}>
+                  Add
+                </ThemedText>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+
         <TextInput
           label="Tags (optional)"
           value={tags}
@@ -227,6 +336,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
     fontWeight: "500",
   },
+  labelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: Spacing.xs,
+  },
   categories: {
     gap: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -243,5 +358,38 @@ const styles = StyleSheet.create({
   charCount: {
     textAlign: "right",
     marginTop: Spacing.xs,
+  },
+  imagesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+  },
+  imageWrapper: {
+    position: "relative",
+  },
+  imagePreview: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  removeButton: {
+    position: "absolute",
+    top: -6,
+    right: -6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addImageButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
   },
 });
