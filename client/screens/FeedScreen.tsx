@@ -11,12 +11,12 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedIcon } from "@/components/ThemedIcon";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { GradientText } from "@/components/GradientText";
 import { useTheme } from "@/hooks/useTheme";
 import { apiRequest } from "@/lib/query-client";
 import { Spacing } from "@/constants/theme";
@@ -124,7 +124,14 @@ export default function FeedScreen() {
         ]}
       >
         <View style={styles.headerLeft}>
-          <ThemedText type="h3">Nexio</ThemedText>
+          <GradientText
+            style={styles.title}
+            colors={["#6C63FF", "#FF6584"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            Nexio
+          </GradientText>
         </View>
         <Pressable
           onPress={() => navigation.navigate("Search")}
@@ -179,12 +186,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.md,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
+  },
+  title: {
+    fontFamily: "Orbitron-Bold",
+    fontSize: 32,
+    fontWeight: "bold",
   },
   list: {
     paddingHorizontal: Spacing.md,
